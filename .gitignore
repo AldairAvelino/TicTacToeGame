@@ -1,0 +1,28 @@
+# NetBeans specific files and directories
+/nbproject/private/
+/nbproject/build/
+/nbbuild/
+/dist/
+
+# NetBeans configuration files
+/nbproject/genfiles/
+/nbproject/build-impl.xml
+/nbproject/GEN-FILES/
+
+# System configuration files
+/build/
+/classes/
+
+# Compilation files and logs
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# User-specific configuration files
+*.iml
+.idea/
+*.ipr
+*.iws
+
