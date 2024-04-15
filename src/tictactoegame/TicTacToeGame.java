@@ -1,11 +1,9 @@
 package tictactoegame;
 
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class TicTacToeGame {
-    private static Player player1;
-    private static Player player2;
-    private static char currentPlayer;
     private static boolean gameEnded = false;
 
     public static void main(String[] args) {
@@ -15,19 +13,32 @@ public class TicTacToeGame {
 
         int choice;
         do {
-            System.out.println("Welcome to Tic Tac Toe Game");
-            System.out.println("1. Start Game");
-            System.out.println("2. View Score");
-            System.out.println("3. Exit");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
-
+            try{
+                System.out.println("Welcome to Tic Tac Toe Game");
+                System.out.println("1. Start Game");
+                System.out.println("2. View Score");
+                System.out.println("3. Exit");
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                // Se o usuário inserir um valor que não é um número inteiro
+                System.out.println("\nInvalid input. Please enter a number.\n");
+                // Limpa o buffer do scanner
+                scanner.nextLine();
+                // Define uma escolha inválida para continuar no loop
+                choice = 0;
+            }
             switch (choice) {
                 case 1:
-                    GameBoard.resetGame();
+                    GameBoard gameBoard = new GameBoard();
+                    System.out.println("Enter player 1's name:");
+                    String name1 = scanner.next();
+                    System.out.println("Enter player 2's name:");
+                    String name2 = scanner.next();
+                    ScoreManager.setPlayerNames(name1, name2);
                     ScoreManager.resetScoreData(); // Redefine os dados do placar
-                    GameBoard.printBoard();
-                    startGame(scanner);
+                    gameBoard.printBoard();
+                    startGame(scanner, gameBoard);
                     break;
                 case 2:
                     ScoreManager.viewScore();
@@ -44,37 +55,32 @@ public class TicTacToeGame {
         scanner.close();
     }
 
-    private static void startGame(Scanner scanner) {
-        System.out.println("Enter player 1's name:");
-        String name1 = scanner.next();
-        System.out.println("Enter player 2's name:");
-        String name2 = scanner.next();
-
-        player1 = new Player(name1, 'X');
-        player2 = new Player(name2, 'O');
-
-        currentPlayer = player1.getSymbol();
+    private static void startGame(Scanner scanner, GameBoard gameBoard) {
+        char currentPlayer = 'X'; // Começa com o jogador 1 (X)
         
         while (!gameEnded) {
-            System.out.println("Player " + currentPlayer + " (" + getPlayerName(currentPlayer) + "), enter your move (1-9):");
+            System.out.println("Player " + currentPlayer + " (" + ScoreManager.getPlayerName(currentPlayer) + "), enter your move (1-9):");
+            
+            try {
+            
             int position = scanner.nextInt();
             
-            if (GameBoard.isValidMove(position)) {
-                GameBoard.makeMove(currentPlayer, position);
-                GameBoard.printBoard();
+            if (gameBoard.isValidMove(position)) {
+                gameBoard.makeMove(currentPlayer, position);
+                gameBoard.printBoard();
                 
-                if (GameBoard.checkWin()) {
-                    System.out.println("Player " + currentPlayer + " (" + getPlayerName(currentPlayer) + ") wins!");
+                if (gameBoard.checkWin()) {
+                    System.out.println("Player " + currentPlayer + " (" + ScoreManager.getPlayerName(currentPlayer) + ") wins!");
                     ScoreManager.updateScore(currentPlayer);
                     if (GameBoard.continueGame(scanner, currentPlayer))
-                        GameBoard.resetGame();
+                        gameBoard.resetBoard();
                     else
                         gameEnded = true;
-                } else if (GameBoard.checkDraw()) {
+                } else if (gameBoard.checkDraw()) {
                     System.out.println("It's a draw!");
                     ScoreManager.updateDrawScore();
                     if (GameBoard.continueGame(scanner, currentPlayer))
-                        GameBoard.resetGame();
+                        gameBoard.resetBoard();
                     else
                         gameEnded = true;
                 } else {
@@ -83,13 +89,12 @@ public class TicTacToeGame {
             } else {
                 System.out.println("Invalid move. Please enter a number between 1 and 9 that hasn't been played.");
             }
+           } catch (InputMismatchException e) {
+               // Se o jogador inserir um valor que não é um número inteiro
+                System.out.println("Invalid input. Please enter a number.");
+                // Limpa o buffer do scanner
+                scanner.nextLine();
+           }
         }
-    }
-
-    private static String getPlayerName(char symbol) {
-        if (symbol == 'X')
-            return player1.getName();
-        else
-            return player2.getName();
     }
 }
