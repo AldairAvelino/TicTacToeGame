@@ -22,20 +22,25 @@ public class ScoreManager {
     }
 
     public static void viewScore() {
-        System.out.println("Player\tWins\tDraws\tLosses");
-        System.out.println(player1.getName() + "\t" + player1.getWins() + "\t" + player1.getDraws() + "\t" + player1.getLosses());
-        System.out.println(player2.getName() + "\t" + player2.getWins() + "\t" + player2.getDraws() + "\t" + player2.getLosses());
+        String horizontalLine = "+-----------------+-------+-------+-------+";
+        String header = "| Player          | Wins  | Draws | Losses|";
+        System.out.println(horizontalLine);
+        System.out.println(header);
+        System.out.println(horizontalLine);
+        System.out.printf("| %-15s | %5d | %5d | %5d |\n", player1.getName(), player1.getWins(), player1.getDraws(), player1.getLosses());
+        System.out.printf("| %-15s | %5d | %5d | %5d |\n", player2.getName(), player2.getWins(), player2.getDraws(), player2.getLosses());
+        System.out.println(horizontalLine);
     }
 
     public static void saveScoreData() {
         try (PrintWriter writer = new PrintWriter(new FileWriter("score.txt"))) {
             writer.println(player1.getName());
-            writer.println(player1.getWins());
-            writer.println(player1.getDraws());
-            writer.println(player1.getLosses());
             writer.println(player2.getName());
+            writer.println(player1.getWins());
             writer.println(player2.getWins());
+            writer.println(player1.getDraws());
             writer.println(player2.getDraws());
+            writer.println(player1.getLosses());
             writer.println(player2.getLosses());
         } catch (IOException e) {
             System.out.println("Error saving score data.");
@@ -44,11 +49,11 @@ public class ScoreManager {
 
     public static void resetScoreData() {
         try (PrintWriter writer = new PrintWriter(new FileWriter("score.txt"))) {
-            writer.println("Player 1");
+            writer.println(player1.getName());
+            writer.println(player2.getName());
             writer.println(0);
             writer.println(0);
             writer.println(0);
-            writer.println("Player 2");
             writer.println(0);
             writer.println(0);
             writer.println(0);
@@ -60,13 +65,12 @@ public class ScoreManager {
     public static void loadScoreData() {
         try (BufferedReader reader = new BufferedReader(new FileReader("score.txt"))) {
             String name1 = reader.readLine();
-            int wins1 = Integer.parseInt(reader.readLine());
-            int draws1 = Integer.parseInt(reader.readLine());
-            int losses1 = Integer.parseInt(reader.readLine());
-
             String name2 = reader.readLine();
+            int wins1 = Integer.parseInt(reader.readLine());
             int wins2 = Integer.parseInt(reader.readLine());
+            int draws1 = Integer.parseInt(reader.readLine());
             int draws2 = Integer.parseInt(reader.readLine());
+            int losses1 = Integer.parseInt(reader.readLine());
             int losses2 = Integer.parseInt(reader.readLine());
 
             player1 = new Player(name1, 'X', wins1, draws1, losses1);
@@ -77,4 +81,19 @@ public class ScoreManager {
             player2 = new Player("Player 2", 'O');
         }
     }
+
+    public static void setPlayerNames(String name1, String name2) {
+        player1 = new Player(name1, 'X');
+        player2 = new Player(name2, 'O');
+    }
+    
+    public static String getPlayerName(char symbol) {
+        if (player1 != null && player1.getSymbol() == symbol)
+            return player1.getName();
+        else if (player2 != null && player2.getSymbol() == symbol)
+            return player2.getName();
+        else
+            return "Unknown Player";
+    }
+
 }
